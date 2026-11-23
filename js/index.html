@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VideoViaAI — Create AI Video & Images from Text</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Hero */
+    .hero {
+      padding: 11rem 0 6rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(96, 165, 250, 0.14) 0%, rgba(192, 132, 252, 0.08) 45%, transparent 70%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.75rem, 6.5vw, 5.25rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      max-width: 900px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .hero p {
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      color: var(--text-secondary);
+      max-width: 620px;
+      margin: 0 auto 2.75rem;
+      line-height: 1.6;
+    }
+
+    /* Quick Prompt Launch Bar */
+    .prompt-launcher {
+      max-width: 720px;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      padding: 0.45rem 0.45rem 0.45rem 1.5rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .prompt-launcher:focus-within {
+      border-color: var(--border-hover);
+    }
+
+    .prompt-launcher input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    .prompt-launcher input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .hero-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Editorial Showcase Grid */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+
+    .showcase-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      aspect-ratio: 16 / 10;
+      background: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.5rem;
+    }
+
+    .showcase-card.card-1 {
+      background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 50%, #09090b 100%);
+    }
+    .showcase-card.card-2 {
+      background: linear-gradient(160deg, #042f2e 0%, #0f172a 55%, #09090b 100%);
+    }
+    .showcase-card.card-3 {
+      background: linear-gradient(160deg, #2e1065 0%, #172554 55%, #09090b 100%);
+    }
+
+    .showcase-tag {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 0.7rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-pill);
+      background: rgba(0, 0, 0, 0.65);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+
+    .showcase-prompt {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* Editorial Feature Split */
+    .section-header {
+      max-width: 680px;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-header h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .section-header p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--border-subtle);
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .feature-cell {
+      padding: 2.5rem;
+      border-right: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .feature-num {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      font-family: monospace;
+    }
+
+    .feature-cell h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .feature-cell p {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    /* Pricing */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+
+    .price-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-card.featured {
+      border-color: rgba(192, 132, 252, 0.55);
+      background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, var(--bg-surface) 100%);
+    }
+
+    .plan-badge {
+      align-self: flex-start;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-pill);
+      background: rgba(192, 132, 252, 0.15);
+      color: #d8b4fe;
+      margin-bottom: 1rem;
+    }
+
+    .price-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .price-amount {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+
+    .price-amount span {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .price-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      flex: 1;
+    }
+
+    .price-features li::before {
+      content: '✓ ';
+      color: #34d399;
+      font-weight: 600;
+    }
+
+    @media (max-width: 960px) {
+      .showcase-grid,
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      .pricing-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">
+      <span class="logo-dot"></span>
+      VideoViaAI
+    </a>
+    <div class="nav-links">
+      <a href="#showcase">Showcase</a>
+      <a href="#features">Capabilities</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-secondary">Sign in</a>
+      <a href="generate.html" class="btn btn-primary">Start creating</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-badge">Free daily tier · 2 images &amp; 1 video every day</div>
+        <h1>Direct cinema and <span class="iridescent-text">still frames</span> from text.</h1>
+        <p>Turn plain-language prompts into high-definition images and fluid AI video clips in seconds—no complex node graphs or expensive subscriptions required.</p>
+
+        <form class="prompt-launcher" action="generate.html" method="GET">
+          <input type="text" name="prompt" placeholder="Describe a scene, shot angle, or visual style..." required />
+          <button type="submit" class="btn btn-primary">Generate</button>
+        </form>
+        <div class="hero-meta">No credit card required · Upgrade anytime from $4.99/mo</div>
+      </div>
+    </section>
+
+    <div class="container">
+      <!-- Google AdSense Slot (Hidden automatically for paid users) -->
+      <div class="ad-slot" id="home-top-ad">Advertisement · Google AdSense 728×90</div>
+    </div>
+
+    <section class="section" id="showcase">
+      <div class="container">
+        <div class="section-header">
+          <h2>Built for visual storytellers.</h2>
+          <p>From concept art to 60-second 4K motion sequences, craft every frame with precision.</p>
+        </div>
+
+        <div class="showcase-grid">
+          <div class="showcase-card card-1">
+            <span class="showcase-tag">15s Video · 1080p</span>
+            <p class="showcase-prompt">“Aerial tracking shot over misty emerald mountains at dawn, golden volumetric light breaking through low clouds.”</p>
+          </div>
+          <div class="showcase-card card-2">
+            <span class="showcase-tag">AI Image · Ultra</span>
+            <p class="showcase-prompt">“Minimalist architectural pavilion floating on still dark water, soft twilight reflection, 35mm anamorphic lens.”</p>
+          </div>
+          <div class="showcase-card card-3">
+            <span class="showcase-tag">30s Video · 4K</span>
+            <p class="showcase-prompt">“Slow dolly-in on a neon-lit Tokyo rain alley at midnight, reflections shimmering across wet asphalt.”</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <h2>Everything you need. Nothing in the way.</h2>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-cell">
+            <div class="feature-num">01</div>
+            <h3>Dual Image &amp; Video Studio</h3>
+            <p>Switch seamlessly between still image generation and motion synthesis inside a single clean workspace.</p>
+          </div>
+          <div class="feature-cell">
+            <div class="feature-num">02</div>
+            <h3>Daily Free Allowance</h3>
+            <p>Generate 2 images and 1 15-second video clip every day at zero cost, supported by lightweight non-intrusive ads.</p>
+          </div>
+          <div class="feature-cell">
+            <div class="feature-num">03</div>
+            <h3>Creator-First Pricing</h3>
+            <p>Paid tiers start at $4.99/mo—up to 70% lower than mainstream AI studios—with ad-free generation and higher resolutions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pricing">
+      <div class="container">
+        <div class="section-header">
+          <h2>Transparent plans that scale with you.</h2>
+          <p>Start free today. Upgrade for longer clips, 4K resolution, priority queues, and zero ads.</p>
+        </div>
+
+        <div class="pricing-grid">
+          <div class="price-card">
+            <h3>Free</h3>
+            <div class="price-amount">$0 <span>/ mo</span></div>
+            <ul class="price-features">
+              <li>2 images per day (Standard)</li>
+              <li>1 video per day (15s, 480p)</li>
+              <li>JPG downloads</li>
+              <li>Ad-supported experience</li>
+            </ul>
+            <a href="generate.html" class="btn btn-secondary">Start Free</a>
+          </div>
+
+          <div class="price-card">
+            <h3>Starter</h3>
+            <div class="price-amount">$4.99 <span>/ mo</span></div>
+            <ul class="price-features">
+              <li>15 images per day (High)</li>
+              <li>3 videos per day (15s, 720p)</li>
+              <li>JPG &amp; PNG downloads</li>
+              <li>Zero ads + 7-day history</li>
+            </ul>
+            <a href="pricing.html?plan=starter" class="btn btn-secondary">Choose Starter</a>
+          </div>
+
+          <div class="price-card featured">
+            <span class="plan-badge">Best Value</span>
+            <h3>Pro</h3>
+            <div class="price-amount">$9.99 <span>/ mo</span></div>
+            <ul class="price-features">
+              <li>40 images per day (Ultra)</li>
+              <li>10 videos per day (30s, 1080p)</li>
+              <li>JPG, PNG &amp; WebP downloads</li>
+              <li>Priority queue + 30-day history</li>
+            </ul>
+            <a href="pricing.html?plan=pro" class="btn btn-primary">Choose Pro</a>
+          </div>
+
+          <div class="price-card">
+            <h3>Unlimited</h3>
+            <div class="price-amount">$19.99 <span>/ mo</span></div>
+            <ul class="price-features">
+              <li>Unlimited images (Maximum)</li>
+              <li>Unlimited videos (60s, 4K)</li>
+              <li>All export formats</li>
+              <li>First priority + forever history</li>
+            </ul>
+            <a href="pricing.html?plan=unlimited" class="btn btn-secondary">Choose Unlimited</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <a href="index.html" class="logo" style="margin-bottom: 1rem;">
+            <span class="logo-dot"></span>
+            VideoViaAI
+          </a>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; max-width: 280px; line-height: 1.6;">
+            Accessible AI image and video generation built for creators worldwide.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="generate.html">Generator Studio</a></li>
+            <li><a href="pricing.html">Pricing Plans</a></li>
+            <li><a href="login.html">Account</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="pricing.html#faq">Billing FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 VideoViaAI. All rights reserved.</span>
+        <span>Built for creators · Powered by AI</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+</body>
+</html>
