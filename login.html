@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign In — VideoViaAI</title>
+  <title>Early Access — VideoViaAI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -11,59 +11,45 @@
   <style>
     .auth-wrapper {
       flex: 1;
+      padding: 7.5rem 0 5rem;
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 8.5rem 5% 4rem;
     }
 
     .auth-card {
+      max-width: 480px;
       width: 100%;
-      max-width: 420px;
+      margin: 0 auto;
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
-      padding: 2.25rem;
+      padding: 2.25rem 2rem;
     }
 
-    .auth-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-subtle);
+    .early-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.3rem 0.8rem;
       border-radius: var(--radius-pill);
-      padding: 0.25rem;
-      margin-bottom: 1.75rem;
-    }
-
-    .auth-tab {
-      padding: 0.55rem;
-      border: none;
-      border-radius: var(--radius-pill);
-      background: transparent;
-      color: var(--text-secondary);
-      font-size: 0.88rem;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s ease;
-    }
-
-    .auth-tab.active {
-      background: #ffffff;
-      color: #000000;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      margin-bottom: 1rem;
     }
 
     .auth-card h1 {
-      font-size: 1.5rem;
+      font-size: 1.85rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.4rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.65rem;
     }
 
     .auth-subtitle {
-      font-size: 0.9rem;
       color: var(--text-secondary);
+      font-size: 0.94rem;
+      line-height: 1.55;
       margin-bottom: 1.75rem;
     }
 
@@ -73,55 +59,77 @@
 
     .form-group label {
       display: block;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       color: var(--text-secondary);
       margin-bottom: 0.45rem;
     }
 
-    .form-input {
+    .form-input,
+    .form-select {
       width: 100%;
-      padding: 0.78rem 1rem;
+      padding: 0.85rem 1rem;
       background: var(--bg-elevated);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       color: var(--text-primary);
       font-family: inherit;
-      font-size: 0.92rem;
+      font-size: 0.94rem;
       outline: none;
+      transition: border-color 0.2s ease;
     }
 
-    .form-input:focus {
+    .form-input:focus,
+    .form-select:focus {
       border-color: var(--border-hover);
     }
 
-    .auth-submit {
+    .submit-btn {
       width: 100%;
-      margin-top: 0.5rem;
-      padding: 0.85rem;
+      padding: 0.9rem;
       font-weight: 600;
+      font-size: 0.95rem;
+      margin-top: 0.35rem;
     }
 
-    .auth-notice {
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status-banner {
       display: none;
-      margin-top: 1.25rem;
-      padding: 0.85rem 1rem;
+      margin-top: 1.15rem;
+      padding: 0.9rem 1rem;
       border-radius: var(--radius-md);
-      background: rgba(52, 211, 153, 0.1);
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+
+    .status-banner.success {
+      display: block;
+      background: rgba(52, 211, 153, 0.12);
       border: 1px solid rgba(52, 211, 153, 0.35);
       color: #6ee7b7;
-      font-size: 0.85rem;
-      line-height: 1.5;
+    }
+
+    .status-banner.error {
+      display: block;
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      color: #fca5a5;
     }
 
     .auth-footer {
       margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-subtle);
       text-align: center;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       color: var(--text-muted);
     }
 
     .auth-footer a {
-      color: var(--text-primary);
+      color: #ffffff;
       text-decoration: underline;
     }
   </style>
@@ -140,43 +148,48 @@
       <a href="contact.html">Contact</a>
     </div>
     <div class="nav-actions">
-      <a href="generate.html" class="btn btn-primary">Start creating</a>
+      <a href="generate.html" class="btn btn-primary">Try Studio Free</a>
     </div>
   </nav>
 
   <main class="auth-wrapper">
-    <div class="auth-card">
-      <div class="auth-tabs">
-        <button type="button" class="auth-tab active" data-mode="signin">Sign In</button>
-        <button type="button" class="auth-tab" data-mode="signup">Create Account</button>
-      </div>
+    <div class="container">
+      <div class="auth-card">
+        <span class="early-badge">Early Access Open</span>
+        <h1>Unlock <span class="iridescent-text">Pro & AI Video</span></h1>
+        <p class="auth-subtitle">
+          Paid accounts and Text-to-Video generation are rolling out in batches. Reserve your spot to get priority access and founding-member perks when your tier opens.
+        </p>
 
-      <h1 id="auth-heading">Welcome back</h1>
-      <p class="auth-subtitle" id="auth-sub">Sign in to access your plan and generation history.</p>
+        <form id="waitlist-form" action="https://formspree.io/f/xnpdojgv" method="POST">
+          <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
+          <input type="hidden" name="form_type" value="Pro Plan Early Access Waitlist" />
 
-      <form id="auth-form">
-        <div class="form-group" id="name-group" style="display: none;">
-          <label for="name">Full Name</label>
-          <input type="text" id="name" class="form-input" placeholder="Your name" />
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" class="form-input" placeholder="you@example.com" required />
+          </div>
+
+          <div class="form-group">
+            <label for="plan">Which plan are you interested in?</label>
+            <select id="plan" name="preferred_plan" class="form-select">
+              <option value="Starter ($9/mo)">Starter — $9/mo (100 images + 6 videos)</option>
+              <option value="Creator ($29/mo)" selected>Creator — $29/mo (300 images + 20 videos)</option>
+              <option value="Studio ($79/mo)">Studio — $79/mo (1,000 images + 55 videos)</option>
+              <option value="Just notify me on launch">Just notify me when AI Video launches</option>
+            </select>
+          </div>
+
+          <button type="submit" id="submit-btn" class="btn btn-primary submit-btn">
+            Join Early Access Waitlist
+          </button>
+
+          <div id="status-banner" class="status-banner"></div>
+        </form>
+
+        <div class="auth-footer">
+          Want to test right now? <a href="generate.html">Generate 2 free AI images daily</a> — no account needed.
         </div>
-
-        <div class="form-group">
-          <label for="email">Email Address</label>
-          <input type="email" id="email" class="form-input" placeholder="you@example.com" required />
-        </div>
-
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" class="form-input" placeholder="••••••••" minlength="6" required />
-        </div>
-
-        <button type="submit" class="btn btn-primary auth-submit" id="submit-btn">Sign In</button>
-      </form>
-
-      <div class="auth-notice" id="auth-notice"></div>
-
-      <div class="auth-footer">
-        By continuing, you agree to our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.
       </div>
     </div>
   </main>
@@ -195,43 +208,42 @@
   </footer>
 
   <script>
-    let authMode = "signin";
-    const heading = document.getElementById("auth-heading");
-    const sub = document.getElementById("auth-sub");
-    const nameGroup = document.getElementById("name-group");
+    const form = document.getElementById("waitlist-form");
     const submitBtn = document.getElementById("submit-btn");
-    const notice = document.getElementById("auth-notice");
+    const statusBanner = document.getElementById("status-banner");
 
-    document.querySelectorAll(".auth-tab").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".auth-tab").forEach((t) => t.classList.remove("active"));
-        tab.classList.add("active");
-        authMode = tab.dataset.mode;
-        notice.style.display = "none";
-
-        if (authMode === "signup") {
-          heading.textContent = "Create your account";
-          sub.textContent = "Start free with 2 images and 1 video every day.";
-          nameGroup.style.display = "block";
-          submitBtn.textContent = "Create Free Account";
-        } else {
-          heading.textContent = "Welcome back";
-          sub.textContent = "Sign in to access your plan and generation history.";
-          nameGroup.style.display = "none";
-          submitBtn.textContent = "Sign In";
-        }
-      });
-    });
-
-    document.getElementById("auth-form").addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      // Firebase Authentication will be connected here in Phase 4
-      notice.textContent =
-        authMode === "signup"
-          ? "Account system is in preview mode. You can already use the Studio for free without signing in!"
-          : "Sign-in will activate once Firebase Auth is connected. Head to the Studio to try the free tier now.";
-      notice.style.display = "block";
+      statusBanner.className = "status-banner";
+      statusBanner.textContent = "";
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Reserving your spot...";
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" },
+        });
+
+        if (response.ok) {
+          form.reset();
+          statusBanner.className = "status-banner success";
+          statusBanner.textContent = "You're on the list! We'll email you as soon as Pro accounts and AI Video open up.";
+        } else {
+          statusBanner.className = "status-banner error";
+          statusBanner.textContent = "Something went wrong. Please double-check your email and try again.";
+        }
+      } catch (err) {
+        statusBanner.className = "status-banner error";
+        statusBanner.textContent = "Network error. Please check your connection and try again.";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Join Early Access Waitlist";
+      }
     });
   </script>
+
 </body>
 </html>
