@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio — VideoViaAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .studio-wrapper {
+      padding: 7.5rem 0 4rem;
+      flex: 1;
+    }
+
+    .studio-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .studio-header h1 {
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .usage-pills {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .usage-pill {
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-pill);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .usage-pill strong {
+      color: var(--text-primary);
+    }
+
+    /* Mode Switcher */
+    .mode-tabs {
+      display: inline-flex;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      padding: 0.3rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .mode-tab {
+      padding: 0.55rem 1.4rem;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .mode-tab.active {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    /* Workspace Grid */
+    .studio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 0.65rem;
+    }
+
+    .prompt-box {
+      width: 100%;
+      min-height: 130px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .prompt-box:focus {
+      border-color: var(--border-hover);
+    }
+
+    /* Style Pills */
+    .style-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .style-pill {
+      padding: 0.45rem 0.95rem;
+      border-radius: var(--radius-pill);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.84rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .style-pill.active {
+      border-color: #c084fc;
+      color: #ffffff;
+      background: rgba(139, 92, 246, 0.16);
+    }
+
+    .generate-btn {
+      width: 100%;
+      padding: 0.9rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Preview Canvas */
+    .canvas-stage {
+      min-height: 380px;
+      border-radius: var(--radius-md);
+      background: #050507;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .canvas-placeholder {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      max-width: 320px;
+      line-height: 1.6;
+    }
+
+    .canvas-stage img,
+    .canvas-stage video {
+      max-width: 100%;
+      max-height: 440px;
+      border-radius: var(--radius-sm);
+      display: block;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(255, 255, 255, 0.12);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .result-actions {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      gap: 1rem;
+    }
+
+    .result-meta {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* Upgrade Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 1.5rem;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hover);
+      border-radius: var(--radius-lg);
+      max-width: 440px;
+      width: 100%;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .modal-card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-card p {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    @media (max-width: 860px) {
+      .studio-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">
+      <span class="logo-dot"></span>
+      VideoViaAI
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="generate.html" style="color: #ffffff;">Studio</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-secondary">Sign in</a>
+      <a href="pricing.html" class="btn btn-primary">Upgrade</a>
+    </div>
+  </nav>
+
+  <main class="studio-wrapper">
+    <div class="container">
+      <div class="studio-header">
+        <h1>Create with <span class="iridescent-text">VideoViaAI</span></h1>
+        <div class="usage-pills">
+          <div class="usage-pill">Plan: <strong id="plan-name">Free</strong></div>
+          <div class="usage-pill">Images left today: <strong id="img-left">2</strong></div>
+          <div class="usage-pill">Videos left today: <strong id="vid-left">1</strong></div>
+        </div>
+      </div>
+
+      <div class="mode-tabs">
+        <button class="mode-tab active" data-mode="image">AI Image</button>
+        <button class="mode-tab" data-mode="video">AI Video (15s)</button>
+      </div>
+
+      <div class="studio-grid">
+        <!-- Left: Prompt Controls -->
+        <div class="panel">
+          <label class="field-label" for="prompt-input">Your Prompt</label>
+          <textarea id="prompt-input" class="prompt-box" placeholder="Describe what you want to see... e.g., Aerial view of emerald mountains with waterfalls at sunrise, cinematic lighting"></textarea>
+
+          <span class="field-label">Visual Style</span>
+          <div class="style-grid" id="style-grid">
+            <button type="button" class="style-pill active" data-style="Cinematic">Cinematic</button>
+            <button type="button" class="style-pill" data-style="Photorealistic">Photorealistic</button>
+            <button type="button" class="style-pill" data-style="Minimalist">Minimalist</button>
+            <button type="button" class="style-pill" data-style="3D Render">3D Render</button>
+            <button type="button" class="style-pill" data-style="Anime">Anime</button>
+          </div>
+
+          <button id="generate-btn" class="btn btn-primary generate-btn">Generate Image</button>
+        </div>
+
+        <!-- Right: Output Preview -->
+        <div class="panel">
+          <span class="field-label">Output Canvas</span>
+          <div class="canvas-stage" id="canvas-stage">
+            <p class="canvas-placeholder">Your generated image or video will appear here. Enter a prompt on the left and click Generate.</p>
+          </div>
+          <div class="result-actions" id="result-actions">
+            <span class="result-meta" id="result-meta">Ready</span>
+            <a id="download-btn" class="btn btn-secondary" download="videoviaai-output.png">Download</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- AdSense Slot (Automatically hidden for paid tiers) -->
+      <div class="ad-slot" id="studio-ad">Advertisement · Google AdSense 728×90</div>
+    </div>
+  </main>
+
+  <!-- Daily Limit Upgrade Modal -->
+  <div class="modal-backdrop" id="limit-modal">
+    <div class="modal-card">
+      <h2>Daily free limit reached</h2>
+      <p id="limit-modal-text">You have used all of your free generations for today. Upgrade to Starter ($4.99/mo) for 15 images/day, 3 videos/day, and zero ads.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="close-modal-btn">Maybe later</button>
+        <a href="pricing.html" class="btn btn-primary">View Plans</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-bottom" style="border-top: none; padding-top: 0;">
+        <span>© 2026 VideoViaAI. All rights reserved.</span>
+        <div style="display: flex; gap: 1.5rem;">
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/limits.js"></script>
+  <script>
+    let currentMode = "image";
+    let selectedStyle = "Cinematic";
+
+    const promptInput = document.getElementById("prompt-input");
+    const generateBtn = document.getElementById("generate-btn");
+    const canvasStage = document.getElementById("canvas-stage");
+    const resultActions = document.getElementById("result-actions");
+    const resultMeta = document.getElementById("result-meta");
+    const downloadBtn = document.getElementById("download-btn");
+    const limitModal = document.getElementById("limit-modal");
+    const studioAd = document.getElementById("studio-ad");
+
+    // Pre-fill prompt if user came from homepage search bar
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("prompt")) {
+      promptInput.value = urlParams.get("prompt");
+    }
+
+    function refreshCounters() {
+      const tier = VideoViaLimits.getTierConfig();
+      const imgLeft = VideoViaLimits.getRemaining("image");
+      const vidLeft = VideoViaLimits.getRemaining("video");
+
+      document.getElementById("plan-name").textContent = tier.name;
+      document.getElementById("img-left").textContent = imgLeft === Infinity ? "Unlimited" : imgLeft;
+      document.getElementById("vid-left").textContent = vidLeft === Infinity ? "Unlimited" : vidLeft;
+
+      if (!tier.showAds && studioAd) {
+        studioAd.style.display = "none";
+      }
+    }
+
+    // Switch between Image and Video tabs
+    document.querySelectorAll(".mode-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".mode-tab").forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+        currentMode = tab.dataset.mode;
+        generateBtn.textContent = currentMode === "image" ? "Generate Image" : "Generate Video";
+      });
+    });
+
+    // Style selection
+    document.querySelectorAll(".style-pill").forEach((pill) => {
+      pill.addEventListener("click", () => {
+        document.querySelectorAll(".style-pill").forEach((p) => p.classList.remove("active"));
+        pill.classList.add("active");
+        selectedStyle = pill.dataset.style;
+      });
+    });
+
+    // Close modal
+    document.getElementById("close-modal-btn").addEventListener("click", () => {
+      limitModal.classList.remove("open");
+    });
+
+    // Generate button handler
+    generateBtn.addEventListener("click", async () => {
+      const prompt = promptInput.value.trim();
+      if (!prompt) {
+        promptInput.focus();
+        return;
+      }
+
+      if (!VideoViaLimits.canGenerate(currentMode)) {
+        limitModal.classList.add("open");
+        return;
+      }
+
+      generateBtn.disabled = true;
+      resultActions.style.display = "none";
+      canvasStage.innerHTML = `
+        <div class="spinner"></div>
+        <p class="canvas-placeholder">Creating your ${selectedStyle.toLowerCase()} ${currentMode}...</p>
+      `;
+
+      const fullPrompt = `${prompt}, ${selectedStyle} style`;
+
+      try {
+        if (VIDEOVIAAI_CONFIG.apiEndpoint) {
+          // Real AI backend (we will connect this in Phase 3)
+          const response = await fetch(VIDEOVIAAI_CONFIG.apiEndpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode: currentMode, prompt: fullPrompt })
+          });
+
+          if (!response.ok) throw new Error("Generation service temporarily busy.");
+
+          const blob = await response.blob();
+          const objectUrl = URL.createObjectURL(blob);
+
+          if (currentMode === "image") {
+            canvasStage.innerHTML = `<img src="${objectUrl}" alt="Generated AI artwork" />`;
+            downloadBtn.download = "videoviaai-image.png";
+          } else {
+            canvasStage.innerHTML = `<video src="${objectUrl}" controls autoplay loop></video>`;
+            downloadBtn.download = "videoviaai-video.mp4";
+          }
+
+          downloadBtn.href = objectUrl;
+          resultMeta.textContent = `${selectedStyle} · Generated just now`;
+          resultActions.style.display = "flex";
+        } else {
+          // Preview mode until Hugging Face API is connected in Phase 3
+          await new Promise((r) => setTimeout(r, 1200));
+          canvasStage.innerHTML = `
+            <div style="padding: 1.5rem; max-width: 380px;">
+              <p style="color: #34d399; font-weight: 600; margin-bottom: 0.5rem;">Studio Ready (Preview Mode)</p>
+              <p class="canvas-placeholder" style="margin-bottom: 1rem;">
+                Prompt received: <strong>“${prompt}”</strong> (${selectedStyle})
+              </p>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">
+                Your daily limit counter is working! Once we connect the free Hugging Face AI engine in Phase 3, real generated images will appear right here.
+              </p>
+            </div>
+          `;
+        }
+
+        VideoViaLimits.recordUsage(currentMode);
+        refreshCounters();
+      } catch (err) {
+        canvasStage.innerHTML = `<p class="canvas-placeholder" style="color: #f87171;">${err.message}</p>`;
+      } finally {
+        generateBtn.disabled = false;
+      }
+    });
+
+    refreshCounters();
+  </script>
+</body>
+</html>
